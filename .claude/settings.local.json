@@ -12,7 +12,14 @@
       "Bash(npm view:*)",
       "Bash(npx prisma generate:*)",
       "Bash(ls:*)",
-      "Bash(npx prisma db push:*)"
+      "Bash(npx prisma db push:*)",
+      "Bash(findstr:*)",
+      "Bash(test:*)",
+      "Bash(npx prisma migrate:*)",
+      "Bash(npm run start:dev:*)",
+      "Bash(netstat:*)",
+      "Bash(taskkill:*)",
+      "Bash(curl:*)"
     ]
   }
 }

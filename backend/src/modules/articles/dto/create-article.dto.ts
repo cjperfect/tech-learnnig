@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsArray, IsOptional, Min } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsString, IsArray, IsOptional, Min, IsNumber } from 'class-validator';
 
 export class CreateArticleDto {
   @ApiProperty({ example: 'Next.js 14 完全指南', description: '文章标题' })
@@ -53,11 +54,15 @@ export class QueryArticlesDto {
 
   @ApiProperty({ example: 1, description: '页码', required: false })
   @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
   @Min(1)
   page?: number = 1;
 
   @ApiProperty({ example: 10, description: '每页数量', required: false })
   @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
   @Min(1)
   pageSize?: number = 10;
 }

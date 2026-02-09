@@ -1,62 +1,62 @@
 // 服务器端 API 调用函数（用于 Next.js 服务器组件）
+// 服务端需要直接调用后端 API，不能使用相对路径
+import axios from 'axios'
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+const BASE_URL = process.env.API_URL || 'http://localhost:6666'
 
-export interface ServerResponse<T> {
-  data?: T
-  error?: string
-  status: number
-}
+const serverApiClient = axios.create({
+  baseURL: BASE_URL,
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
 
-async function fetchAPI<T>(
-  endpoint: string,
-  options?: RequestInit
-): Promise<T> {
-  const url = `${BASE_URL}${endpoint}`
-
-  try {
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options?.headers,
-      },
+// 请求拦截器
+serverApiClient.interceptors.request.use(
+  (config) => {
+    console.log('[Server API Request]', config.method?.toUpperCase(), config.url, {
+      params: config.params,
+      data: config.data,
     })
+    return config
+  },
+  (error) => {
+    console.error('[Server API Request Error]', error)
+    return Promise.reject(error)
+  },
+)
 
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`)
-    }
-
-    const contentType = response.headers.get('content-type')
-    if (!contentType || !contentType.includes('application/json')) {
-      throw new Error(`API returned non-JSON response: ${contentType}`)
-    }
-
-    return await response.json()
-  } catch (error) {
-    console.error(`Failed to fetch ${endpoint}:`, error)
-    throw error
-  }
-}
+// 响应拦截器 - 解包后端的 {code, msg, data} 格式
+serverApiClient.interceptors.response.use(
+  (response) => {
+    console.log('[Server API Response]', response.status, response.data)
+    // 后端返回格式: {code: 200, msg: "success", data: ...}
+    // 我们需要返回 data 字段
+    return response.data.data
+  },
+  (error) => {
+    console.error('[Server API Error]', {
+      status: error.response?.status,
+      data: error.response?.data,
+      url: error.config?.url,
+      params: error.config?.params,
+    })
+    return Promise.reject(error.response?.data || error)
+  },
+)
 
 // 导出服务器端 API 函数
 export const serverApi = {
-  get: <T>(endpoint: string) => fetchAPI<T>(endpoint),
+  get: <T>(endpoint: string, params?: any) =>
+    serverApiClient.get<T>(endpoint, { params }),
 
   post: <T>(endpoint: string, data: any) =>
-    fetchAPI<T>(endpoint, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }),
+    serverApiClient.post<T>(endpoint, data),
 
   put: <T>(endpoint: string, data: any) =>
-    fetchAPI<T>(endpoint, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    }),
+    serverApiClient.put<T>(endpoint, data),
 
   delete: <T>(endpoint: string) =>
-    fetchAPI<T>(endpoint, {
-      method: 'DELETE',
-    }),
+    serverApiClient.delete<T>(endpoint),
 }
