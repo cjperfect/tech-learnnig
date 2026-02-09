@@ -110,9 +110,13 @@ export class PromptsService {
   }
 
   async create(createPromptDto: CreatePromptDto, authorId?: string) {
+    const { categoryId, tags, ...rest } = createPromptDto;
+
     return this.prisma.prompt.create({
       data: {
-        ...createPromptDto,
+        ...rest,
+        categoryId,
+        tags: tags as any, // Json type handling
         authorId,
       },
       include: {

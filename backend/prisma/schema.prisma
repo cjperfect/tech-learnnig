@@ -29,7 +29,7 @@ model Article {
   content    String   @db.Text
   summary    String?
   coverImage String?
-  tags       String[]
+  tags       Json
   viewCount  Int      @default(0)
   authorId   String
   author     User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
@@ -55,7 +55,7 @@ model Prompt {
   description String?
   categoryId  String
   category    PromptCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  tags        String[]
+  tags        Json
   likes       Int            @default(0)
   copies      Int            @default(0)
   authorId    String?

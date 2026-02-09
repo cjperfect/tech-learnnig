@@ -9,7 +9,10 @@
       "Skill(find-skills)",
       "Bash(npx skills find:*)",
       "Bash(npx skills add:*)",
-      "Bash(npm view:*)"
+      "Bash(npm view:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(ls:*)",
+      "Bash(npx prisma db push:*)"
     ]
   }
 }

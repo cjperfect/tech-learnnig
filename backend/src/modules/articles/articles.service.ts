@@ -20,10 +20,11 @@ export class ArticlesService {
       ];
     }
 
-    // 标签筛选
+    // 标签筛选 - Json类型需要使用字符串搜索
     if (tag) {
       where.tags = {
-        has: tag,
+        path: '$',
+        string_contains: tag,
       };
     }
 
@@ -83,9 +84,12 @@ export class ArticlesService {
   }
 
   async create(createArticleDto: CreateArticleDto, authorId: string) {
+    const { tags, ...rest } = createArticleDto;
+
     return this.prisma.article.create({
       data: {
-        ...createArticleDto,
+        ...rest,
+        tags: tags as any, // Json type handling
         authorId,
       },
       include: {
@@ -136,7 +140,11 @@ export class ArticlesService {
       select: { tags: true },
     });
 
-    const allTags = articles.flatMap((a) => a.tags);
+    // Json类型需要先转换为数组
+    const allTags = articles.flatMap((a) => {
+      const tagArray = Array.isArray(a.tags) ? a.tags : [];
+      return tagArray;
+    });
     const uniqueTags = Array.from(new Set(allTags));
 
     return uniqueTags;
