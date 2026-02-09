@@ -11,16 +11,19 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  openid    String?   @unique
-  unionid   String?
-  nickname  String?
-  avatar    String?
-  email     String?   @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  articles  Article[]
-  prompts   Prompt[]
+  id          String      @id @default(cuid())
+  openid      String?     @unique
+  unionid     String?
+  nickname    String?
+  avatar      String?
+  email       String?     @unique
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  articles    Article[]
+  prompts     Prompt[]
+  mcps        Mcp[]
+  agentSkills AgentSkill[]
+  aiHotspots  AiHotspot[]
 }
 
 model Article {
@@ -84,4 +87,92 @@ model NavLink {
   category   NavCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   clicks     Int         @default(0)
   createdAt  DateTime    @default(now())
+}
+
+// MCP 相关模型
+model McpCategory {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  icon        String?
+  slug        String   @unique
+  sort        Int      @default(0)
+  mcps        Mcp[]
+  createdAt   DateTime @default(now())
+}
+
+model Mcp {
+  id            String      @id @default(cuid())
+  title         String
+  description   String      @db.Text
+  repository    String?
+  documentation String?
+  categoryId    String
+  category      McpCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  tags          Json
+  stars         Int         @default(0)
+  downloads     Int         @default(0)
+  authorId      String?
+  author        User?       @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+// Agent Skills 相关模型
+model AgentSkillCategory {
+  id          String      @id @default(cuid())
+  name        String
+  description String?
+  icon        String?
+  slug        String      @unique
+  sort        Int         @default(0)
+  skills      AgentSkill[]
+  createdAt   DateTime    @default(now())
+}
+
+model AgentSkill {
+  id          String             @id @default(cuid())
+  title       String
+  description String             @db.Text
+  code        String             @db.Text
+  config      String?            @db.Text
+  categoryId  String
+  category    AgentSkillCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  tags        Json
+  difficulty  String
+  usage       Int                @default(0)
+  authorId    String?
+  author      User?              @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+// AI 热点相关模型
+model AiHotspotCategory {
+  id          String      @id @default(cuid())
+  name        String
+  description String?
+  icon        String?
+  slug        String      @unique
+  sort        Int         @default(0)
+  hotspots    AiHotspot[]
+  createdAt   DateTime    @default(now())
+}
+
+model AiHotspot {
+  id          String           @id @default(cuid())
+  title       String
+  content     String           @db.Text
+  summary     String?
+  source      String?
+  sourceUrl   String?
+  categoryId  String
+  category    AiHotspotCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  tags        Json
+  viewCount   Int              @default(0)
+  likes       Int              @default(0)
+  authorId    String?
+  author      User?            @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 }

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsArray, IsOptional, Min, IsNumber } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreatePromptDto {
   @ApiProperty({ example: '代码审查助手', description: 'Prompt标题' })
@@ -46,11 +47,13 @@ export class QueryPromptsDto {
   @ApiProperty({ example: 1, description: '页码', required: false })
   @IsOptional()
   @Min(1)
+  @Type(() => Number)
   page?: number = 1;
 
   @ApiProperty({ example: 10, description: '每页数量', required: false })
   @IsOptional()
   @Min(1)
+  @Type(() => Number)
   pageSize?: number = 10;
 }
 

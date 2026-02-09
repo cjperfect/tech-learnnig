@@ -12,7 +12,7 @@ const navItems = [
   { name: '首页', href: '/', icon: FiHome },
   { name: '技术文章', href: '/articles', icon: FiBookOpen },
   { name: 'Prompt库', href: '/prompts', icon: FiCode },
-  { name: 'MCP', href: '/mcp', icon: FiCpu },
+  { name: 'MCP', href: '/mcps', icon: FiCpu },
   { name: 'Agent Skills', href: '/agent-skills', icon: FiLayers },
   { name: 'AI热点', href: '/ai-hotspot', icon: FiTrendingUp },
 ]

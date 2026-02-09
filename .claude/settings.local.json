@@ -19,7 +19,8 @@
       "Bash(npm run start:dev:*)",
       "Bash(netstat:*)",
       "Bash(taskkill:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(npx ts-node:*)"
     ]
   }
 }
